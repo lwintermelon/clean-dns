@@ -1,0 +1,21 @@
+[package]
+name = "clean-dns"
+version = "0.1.0"
+edition = "2018"
+publish = false
+
+[dependencies]
+aya = { git = "https://github.com/aya-rs/aya", branch = "main", features = [
+    "async_tokio",
+] }
+clean-dns-common = { path = "../clean-dns-common", features = ["userspace"] }
+anyhow = "1.0.42"
+ctrlc = "3.2"
+bytes = "1"
+tokio = { version = "1", features = ["full"] }
+
+structopt = { version = "0.3" }
+
+[[bin]]
+name = "clean-dns"
+path = "src/main.rs"

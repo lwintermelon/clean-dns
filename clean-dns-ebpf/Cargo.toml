@@ -1,0 +1,25 @@
+[package]
+name = "clean-dns-ebpf"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+aya-bpf = { git = "http://github.com/aya-rs/aya", branch = "main" }
+clean-dns-common = { path = "../clean-dns-common" }
+memoffset = "0.6"
+
+[[bin]]
+name = "clean-dns"
+path = "src/main.rs"
+
+[profile.dev]
+panic = "abort"
+debug = 1
+opt-level = 2
+overflow-checks = false
+
+[profile.release]
+panic = "abort"
+
+[workspace]
+members = []

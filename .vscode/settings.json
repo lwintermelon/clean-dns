@@ -1,0 +1,6 @@
+{
+  "rust-analyzer.linkedProjects": [
+    "Cargo.toml",
+    "clean-dns-ebpf/Cargo.toml"
+  ]
+}

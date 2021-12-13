@@ -1,2 +1,3 @@
 [workspace]
 members = ["clean-dns", "clean-dns-common", "xtask"]
+exclude = ["clean-dns-ebpf"]

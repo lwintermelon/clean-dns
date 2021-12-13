@@ -1,5 +1,6 @@
 # clean-dns
 
+this is a fork version of [clean-dns-bpf](https://github.com/ihciah/clean-dns-bpf), please refer to it for details, but use [aya](https://github.com/aya-rs/aya) instead and contains a userspace program.
 ## Prerequisites
 
 1. Install a rust stable toolchain: `rustup install stable`

@@ -7,7 +7,7 @@ use std::{
 
 pub fn generate() -> Result<(), anyhow::Error> {
     let dir = PathBuf::from("clean-dns-ebpf/src");
-    let names: Vec<&str> = vec!["ethhdr", "iphdr"];
+    let names: Vec<&str> = vec!["ethhdr", "iphdr","udphdr"];
     let bindings = btf_types::generate(Path::new("/sys/kernel/btf/vmlinux"), &names, true)?;
     // Write the bindings to the $OUT_DIR/bindings.rs file.
     let mut out = File::create(dir.join("bindings.rs"))?;

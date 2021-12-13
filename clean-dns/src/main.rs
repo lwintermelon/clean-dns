@@ -1,6 +1,6 @@
 use aya::{
     include_bytes_aligned,
-    maps::perf::AsyncPerfEventArray,
+    maps::{perf::AsyncPerfEventArray, HashMap},
     programs::{Xdp, XdpFlags},
     util::online_cpus,
     Bpf,
@@ -9,14 +9,10 @@ use bytes::BytesMut;
 use clean_dns_common::PacketLog;
 use std::{
     convert::{TryFrom, TryInto},
-    net,
-    sync::atomic::{AtomicBool, Ordering},
-    sync::Arc,
-    thread,
-    time::Duration,
+    net::{self, Ipv4Addr},
 };
 use structopt::StructOpt;
-use tokio::{signal, task};
+use tokio::{self, signal, task};
 
 #[derive(Debug, StructOpt)]
 struct Opt {
@@ -43,14 +39,9 @@ async fn main() -> Result<(), anyhow::Error> {
     program.load()?;
     program.attach(&opt.iface, XdpFlags::default())?;
     let mut perf_array = AsyncPerfEventArray::try_from(bpf.map_mut("EVENTS")?)?;
-
-    let running = Arc::new(AtomicBool::new(true));
-    let r = running.clone();
-
-    ctrlc::set_handler(move || {
-        r.store(false, Ordering::SeqCst);
-    })
-    .expect("Error setting Ctrl-C handler");
+    let mut blocklist: HashMap<_, u32, u32> = HashMap::try_from(bpf.map_mut("BLOCKLIST")?)?;
+    blocklist.insert(Ipv4Addr::new(8, 8, 8, 8).try_into()?, 0, 0)?;
+    blocklist.insert(Ipv4Addr::new(1, 1, 1, 1).try_into()?, 0, 0)?;
 
     println!("Waiting for Ctrl-C...");
     for cpu_id in online_cpus()? {
@@ -77,9 +68,7 @@ async fn main() -> Result<(), anyhow::Error> {
             }
         });
     }
-    while running.load(Ordering::SeqCst) {
-        thread::sleep(Duration::from_millis(500))
-    }
+    signal::ctrl_c().await.expect("failed to listen for event");
     println!("Exiting...");
 
     Ok(())
